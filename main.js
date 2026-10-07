@@ -36,7 +36,7 @@
   var yr = $('#yr'); if (yr) yr.textContent = new Date().getFullYear();
 })();
 
-// booking window: service, date, time and details are sent as an e-mail request
+// Portfolio demo only: no network requests, storage or real reservations.
 (function () {
   var dlg = document.getElementById('booking');
   if (!dlg) return;
@@ -78,26 +78,23 @@
       b.type = 'button'; b.textContent = day; b.disabled = !isOpen(d);
       if (+d === +today) b.classList.add('today');
       if (chosen.date && key(chosen.date) === key(d)) b.classList.add('sel');
-      b.setAttribute('aria-label', longDate(d));
-      (function (d) { b.addEventListener('click', function () { chosen.date = d; chosen.time = null; drawCal(); drawSlots(); update(); }); })(d);
+      b.setAttribute('aria-label', longDate(d) + ' ' + d.getFullYear());
+      b.setAttribute('aria-pressed', !!chosen.date && key(chosen.date) === key(d));
+      (function (d) { b.addEventListener('click', function () { chosen.date = d; chosen.time = null; drawCal(); drawSlots(); update(); grid.querySelector('.sel').focus(); }); })(d);
       grid.appendChild(b);
     }
   }
 
-  // demo availability: some times look taken, always the same for a given day
-  function taken(d, t) {
-    var h = 0, s = key(d) + t;
-    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-    return h % 4 === 0;
-  }
   function drawSlots() {
     slotsEl.innerHTML = '';
     if (!chosen.date) { slotsEl.innerHTML = '<p class="bk-hint">Choose a date first.</p>'; return; }
-    for (var m = 9 * 60; m <= 17 * 60 + 30; m += 30) {
+    var duration = SERVICES[sel.value][2];
+    for (var m = 9 * 60; m + duration <= 18 * 60; m += 30) {
       var t = pad(Math.floor(m / 60)) + ':' + pad(m % 60), b = document.createElement('button');
-      b.type = 'button'; b.textContent = t; b.disabled = taken(chosen.date, t);
+      b.type = 'button'; b.textContent = t;
+      b.setAttribute('aria-pressed', chosen.time === t);
       if (chosen.time === t) b.classList.add('sel');
-      (function (t) { b.addEventListener('click', function () { chosen.time = t; drawSlots(); update(); }); })(t);
+      (function (t) { b.addEventListener('click', function () { chosen.time = t; drawSlots(); update(); slotsEl.querySelector('.sel').focus(); }); })(t);
       slotsEl.appendChild(b);
     }
   }
@@ -110,9 +107,13 @@
   }
   $('cal-prev').addEventListener('click', function () { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); drawCal(); });
   $('cal-next').addEventListener('click', function () { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); drawCal(); });
-  sel.addEventListener('change', update);
+  sel.addEventListener('change', function () { chosen.time = null; drawSlots(); update(); });
 
   function show() {
+    form.reset();
+    Array.prototype.forEach.call(form.querySelectorAll('input'), function (input) { input.classList.remove('bad'); input.removeAttribute('aria-invalid'); });
+    today = new Date(); today.setHours(0, 0, 0, 0);
+    first = new Date(today.getFullYear(), today.getMonth(), 1);
     form.hidden = false; done.hidden = true; head.hidden = false;
     chosen = { date: null, time: null };
     view = new Date(first);
@@ -122,33 +123,37 @@
     if (!left) view = new Date(first.getFullYear(), first.getMonth() + 1, 1);
     drawCal(); drawSlots(); update();
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    dlg.scrollTop = 0;
   }
-  function close() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+  function clearDetails() { form.reset(); }
+  function close() { if (dlg.close) dlg.close(); else { dlg.removeAttribute('open'); clearDetails(); } }
+  dlg.addEventListener('close', clearDetails);
   dlg.addEventListener('click', function (e) { if (e.target === dlg || e.target.hasAttribute('data-close')) close(); });
 
-  // every "Book" button opens the window (without JavaScript they still open an e-mail)
-  Array.prototype.forEach.call(document.querySelectorAll('a[href^="mailto:hello@kadeandco.example?subject=Booking"]'), function (a) {
-    a.addEventListener('click', function (e) { e.preventDefault(); if (menu) menu.classList.remove('open'); show(); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-booking]'), function (a) {
+    a.addEventListener('click', function (e) { e.preventDefault(); if (menu) menu.classList.remove('open'); document.querySelector('.burger').setAttribute('aria-expanded', 'false'); show(); });
   });
 
   Array.prototype.forEach.call(form.querySelectorAll('input'), function (i) {
-    i.addEventListener('input', function () { i.classList.remove('bad'); err.textContent = ''; });
+    i.addEventListener('input', function () { i.classList.remove('bad'); i.removeAttribute('aria-invalid'); err.textContent = ''; });
   });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var name = $('bk-name'), phone = $('bk-phone');
-    var okPhone = phone.value.replace(/\D/g, '').length >= 8;
+    var digits = phone.value.replace(/\D/g, '').length;
+    var okPhone = /^[+\d\s().-]+$/.test(phone.value.trim()) && digits >= 8 && digits <= 15;
     name.classList.toggle('bad', !name.value.trim()); phone.classList.toggle('bad', !okPhone);
-    if (!chosen.date) { err.textContent = 'Please choose a date.'; return; }
-    if (!chosen.time) { err.textContent = 'Please choose a time.'; return; }
+    name.setAttribute('aria-invalid', !name.value.trim()); phone.setAttribute('aria-invalid', !okPhone);
+    if (!chosen.date) { err.textContent = 'Please choose a date.'; grid.querySelector('button:not(:disabled)').focus(); return; }
+    if (!chosen.time) { err.textContent = 'Please choose a time.'; slotsEl.querySelector('button:not(:disabled)').focus(); return; }
     if (!name.value.trim()) { err.textContent = 'Please enter your name.'; name.focus(); return; }
     if (!okPhone) { err.textContent = 'Please enter a phone number we can reach you on.'; phone.focus(); return; }
     var s = SERVICES[sel.value];
-    var body = 'Hi Kade & Co.,\n\nI would like to book:\nService: ' + s[0] + ' (€' + s[1] + ', ' + s[2] + ' min)\nDate: ' + longDate(chosen.date) + ' ' + chosen.date.getFullYear() + '\nTime: ' + chosen.time + '\nName: ' + name.value.trim() + '\nPhone: ' + phone.value.trim() + '\n\nThank you!';
-    var href = 'mailto:hello@kadeandco.example?subject=' + encodeURIComponent('Booking request: ' + s[0] + ', ' + longDate(chosen.date) + ' ' + chosen.time) + '&body=' + encodeURIComponent(body);
-    $('bk-done-text').textContent = s[0] + ' on ' + longDate(chosen.date) + ' at ' + chosen.time + ', for ' + name.value.trim() + '.';
+    $('bk-done-text').textContent = s[0] + ' · €' + s[1] + ' · ' + s[2] + ' min. ' + longDate(chosen.date) + ' ' + chosen.date.getFullYear() + ' at ' + chosen.time + ', for ' + name.value.trim() + '.';
     form.hidden = true; head.hidden = true; done.hidden = false; dlg.scrollTop = 0;
-    location.href = href;
+    dlg.setAttribute('aria-labelledby', 'bk-done-title');
+    done.querySelector('h2').focus();
   });
+  dlg.addEventListener('close', function () { dlg.setAttribute('aria-labelledby', 'bk-title'); $('bk-done-text').textContent = ''; });
 })();

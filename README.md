@@ -6,7 +6,7 @@ A one-page website for a small local business. This is a **concept project**: th
 
 ## What is inside
 - Hero, work gallery, price list and "about the shop" sections
-- Booking window with a calendar and time slots. The request opens the visitor's e-mail app with the details filled in.
+- Interactive booking demo with a calendar, service-aware time slots, form validation and a request preview. No appointment is reserved and no e-mail is sent. Details are not saved or transmitted.
 - Google map that loads only after a click
 - Fully responsive, with a phone menu and fast image loading
 - No cookies and no trackers. Fonts are served from the site itself.

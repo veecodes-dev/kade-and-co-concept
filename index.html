@@ -10,18 +10,16 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230f0d0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%23c98a4b' font-family='serif'%3EK%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="img/chair.jpg" as="image">
 <link rel="stylesheet" href="fonts/fonts.css">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
-
-<div class="notice">Concept project by <a href="https://veecodes.com">Vee</a> — Kade &amp; Co. is a fictional barbershop.</div>
 
 <header class="top">
   <a class="logo" href="#top" aria-label="Kade &amp; Co., home">KADE<i>&amp;</i>CO</a>
   <nav class="nav" aria-label="Main">
     <a href="#work">Work</a><a href="#services">Services</a><a href="#about">About</a><a href="#visit">Visit</a>
   </nav>
-  <a class="btn btn-sm book" href="mailto:hello@kadeandco.example?subject=Booking%20request&amp;body=Hi%20Kade%20%26%20Co.%2C%0A%0AI%27d%20like%20to%20book%3A%0AService%3A%20%0APreferred%20day%20and%20time%3A%20%0AName%3A%20%0APhone%3A%20">Book a chair</a>
+  <a class="btn btn-sm book" href="#visit" data-booking aria-haspopup="dialog" aria-controls="booking">Book a chair</a>
   <button class="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
 </header>
 
@@ -32,7 +30,7 @@
     <h1>The chair you <em>keep</em> coming back to.</h1>
     <p class="lead">Precision cuts, straight-razor shaves and beard work in a quiet, old-fashioned shop. Unhurried, done right.</p>
     <div class="btns">
-      <a class="btn f" href="mailto:hello@kadeandco.example?subject=Booking%20request&amp;body=Hi%20Kade%20%26%20Co.%2C%0A%0AI%27d%20like%20to%20book%3A%0AService%3A%20%0APreferred%20day%20and%20time%3A%20%0AName%3A%20%0APhone%3A%20">Book a chair</a>
+      <a class="btn f" href="#visit" data-booking aria-haspopup="dialog" aria-controls="booking">Book a chair</a>
       <a class="btn" href="#work">See our work</a>
     </div>
   </div>
@@ -69,7 +67,7 @@
     <p class="eb">About the shop</p>
     <h2>Three chairs. <em>No shortcuts.</em></h2>
     <p>We built Kade &amp; Co. for men who want a proper haircut and ten quiet minutes. Every visit starts with a conversation and ends with a hot towel.</p>
-    <p>Walk-ins are welcome, but booking guarantees your time.</p>
+    <p>Walk-ins are welcome. For a preferred time, request an appointment in advance.</p>
     <div class="stats"><div><b>6</b><span>years open</span></div><div><b>3</b><span>chairs</span></div><div><b>4.7</b><span>average rating</span></div></div>
   </div>
 </section>
@@ -85,7 +83,7 @@
         <div><span>E-mail</span><a href="mailto:hello@kadeandco.example">hello@kadeandco.example</a></div>
         <div><span>Hours</span>Tue – Sat, 09:00 – 18:00</div>
       </div>
-      <a class="btn f" href="mailto:hello@kadeandco.example?subject=Booking%20request&amp;body=Hi%20Kade%20%26%20Co.%2C%0A%0AI%27d%20like%20to%20book%3A%0AService%3A%20%0APreferred%20day%20and%20time%3A%20%0AName%3A%20%0APhone%3A%20">Book by e-mail</a>
+      <a class="btn f" href="#visit" data-booking aria-haspopup="dialog" aria-controls="booking">Book a chair</a>
     </div>
     <div class="map" id="map">
       <svg viewBox="0 0 700 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g stroke="#2e2822" stroke-width="10" fill="none"><path d="M-20 120 L720 190"/><path d="M-20 330 L720 280"/><path d="M180 -20 L250 480"/><path d="M470 -20 L420 480"/></g><g stroke="#24201b" stroke-width="4" fill="none"><path d="M-20 220 L720 240"/><path d="M330 -20 L340 480"/><path d="M40 -20 L90 480"/><path d="M600 -20 L560 480"/></g></svg>
@@ -104,15 +102,15 @@
 </footer>
 
 
-<dialog class="bk" id="booking" aria-labelledby="bk-title">
-  <div class="bk-head"><div><p class="eb">Book a chair</p><h2 id="bk-title">Pick a <em>time</em></h2></div><button class="bk-x" type="button" aria-label="Close" data-close>×</button></div>
+<dialog class="bk" id="booking" aria-labelledby="bk-title" aria-describedby="bk-demo">
+  <div class="bk-head"><div><p class="eb">Book a chair</p><h2 id="bk-title">Pick a <em>time</em></h2><p class="bk-demo" id="bk-demo">Interactive demo · Sample times only. No real appointment is booked. Please use fictional contact details.</p></div><button class="bk-x" type="button" aria-label="Close" data-close>×</button></div>
   <form class="bk-body" id="bk-form" novalidate>
     <div class="bk-col">
       <label class="bk-l" for="bk-service">1 · Service</label>
       <select id="bk-service" name="service"></select>
       <div class="bk-l" id="bk-date-l">2 · Date</div>
       <div class="cal" aria-labelledby="bk-date-l">
-        <div class="cal-h"><button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">‹</button><b id="cal-title"></b><button type="button" class="cal-nav" id="cal-next" aria-label="Next month">›</button></div>
+        <div class="cal-h"><button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">‹</button><b id="cal-title" aria-live="polite"></b><button type="button" class="cal-nav" id="cal-next" aria-label="Next month">›</button></div>
         <div class="cal-w"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
         <div class="cal-g" id="cal-grid"></div>
       </div>
@@ -122,23 +120,24 @@
       <div class="bk-l" id="bk-time-l">3 · Time</div>
       <div class="slots" id="slots" role="group" aria-labelledby="bk-time-l"><p class="bk-hint">Choose a date first.</p></div>
       <div class="bk-l">4 · Your details</div>
-      <div class="fld"><label for="bk-name">Name</label><input id="bk-name" name="name" autocomplete="name" required></div>
-      <div class="fld"><label for="bk-phone">Phone</label><input id="bk-phone" name="phone" type="tel" autocomplete="tel" required></div>
+      <div class="fld"><label for="bk-name">Name</label><input id="bk-name" name="name" autocomplete="off" maxlength="80" aria-describedby="bk-err" required></div>
+      <div class="fld"><label for="bk-phone">Phone</label><input id="bk-phone" name="phone" type="tel" autocomplete="off" maxlength="25" aria-describedby="bk-err" required></div>
       <p class="bk-sum" id="bk-sum" aria-live="polite">Nothing selected yet.</p>
       <p class="bk-err" id="bk-err" role="alert"></p>
-      <button class="btn f bk-go" type="submit">Send booking request</button>
-      <p class="bk-hint">This sends an e-mail request. The shop confirms your time by e-mail or phone.</p>
+      <button class="btn f bk-go" type="submit">Preview booking request</button>
+      <p class="bk-hint">Demo only: your details stay on this page and are cleared when you close it. Nothing is sent or saved.</p>
     </div>
   </form>
   <div class="bk-done" id="bk-done" hidden>
-    <p class="eb">Request ready</p>
-    <h2>Almost <em>done</em></h2>
+    <p class="eb">Demo complete</p>
+    <h2 id="bk-done-title" tabindex="-1">Your request <em>preview</em></h2>
     <p id="bk-done-text"></p>
-    <p class="bk-hint">Your e-mail app should have opened with the request. If it did not, send the details to <a href="mailto:hello@kadeandco.example">hello@kadeandco.example</a>.</p>
+    <p class="bk-hint">You have completed the booking demo. No appointment has been reserved and no e-mail has been sent. For a real business, this step connects to its booking service.</p>
     <button class="btn" type="button" data-close>Close</button>
   </div>
 </dialog>
 
-<script src="main.js?v=3"></script>
+<noscript><p class="notice">Enable JavaScript to try the interactive booking demo. This fictional shop does not accept real bookings.</p></noscript>
+<script src="main.js?v=4"></script>
 </body>
 </html>
